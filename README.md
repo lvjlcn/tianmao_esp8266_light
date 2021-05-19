@@ -14,6 +14,7 @@ myespligt
 The **myespligt** ...
 
 ### Dependencies
+AliOS things 3.1.0 
 
 ### Supported Boards
 
