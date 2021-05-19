@@ -1,0 +1,52 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/out/myespligt@esp8266/binary/myespligt@esp8266.elf",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": true,
+            "miDebuggerServerAddress": "localhost:4242",
+            "serverLaunchTimeout": 2000,
+            "targetArchitecture": "ARM",
+            "setupCommands": [
+                {
+                    "text": "cd ${workspaceRoot}"
+                },
+                {
+                    "text": "target remote localhost:4242"
+                },
+                {
+                    "text": "file out/myespligt@esp8266/binary/myespligt@esp8266.elf"
+                },
+                {
+                    "text": "break application_start"
+                },
+                {
+                    "text": "monitor reset"
+                },
+                {
+                    "text": "load"
+                }
+            ],
+            "customLaunchSetupCommands": [],
+            "launchCompleteCommand": "exec-run",
+            "preLaunchTask": "alios-studio: Debug",
+            "MIMode": "gdb",
+            "osx": {
+                "miDebuggerPath": "arm-none-eabi-gdb"
+            },
+            "linux": {
+                "miDebuggerPath": "arm-none-eabi-gdb"
+            },
+            "windows": {
+                "miDebuggerPath": "arm-none-eabi-gdb.exe"
+            }
+        }
+    ]
+}

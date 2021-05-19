@@ -1,0 +1,186 @@
+menu "Application Configuration"
+config AOS_APP_MYESPLIGT
+    bool "Linkkit Demo"
+    select AOS_COMP_CLI if !AOS_BOARD_ESP8266 && !AOS_CREATE_PROJECT
+    select AOS_COMP_NETMGR if !AOS_CREATE_PROJECT
+    select AOS_COMP_CJSON if !AOS_CREATE_PROJECT
+    select AOS_COMP_SDK_DEVMODEL if !AOS_CREATE_PROJECT
+    select AOS_COMP_SDK_AWSS if !AOS_CREATE_PROJECT
+    select AOS_COMP_UND if !AOS_CREATE_PROJECT
+    help
+        linkkit demo
+
+if AOS_APP_MYESPLIGT
+# Configurations for app linkkit_demo
+
+config ENABLE_AOS_OTA
+    bool "Enable OTA"
+    default y
+    select AOS_COMP_OTA if !AOS_CREATE_PROJECT
+    help
+        enable feature OTA.
+
+choice
+    prompt "Select Case"
+    default LINKKIT_DEMO_CONFIG_CASE_SOLO
+    help
+        select case to build
+
+    config LINKKIT_DEMO_CONFIG_CASE_SOLO
+        bool "SOLO"
+        help
+            default case, build linkkit_example_solo.c or deprecated/solo.c(when enable deprecated)
+
+    config LINKKIT_DEMO_CONFIG_CASE_SCHED
+        bool "Sched"
+        help
+            case sched, build linkkit_example_sched.c or deprecated/sched.c(when enable deprecated)
+
+    config LINKKIT_DEMO_CONFIG_CASE_CNTDOWN
+        bool "Cntdown"
+        help
+            case countdown, build linkkit_example_cntdown.c or deprecated/cntdown.c(when enable deprecated)
+endchoice
+
+config LINKKIT_DEMO_CONFIG_PRINT_HEAP
+    bool "Show Free Heap Duration"
+    default n
+    help
+    displays heap space periodically for debug
+
+config BLE
+    bool "BLE Enable"
+    depends on AWSS_SUPPORT_BLE_PROVISION
+    default y
+    help
+
+config SYSINFO_APP_VERSION
+    string "Firmware Version"
+    default "app-1.0.0-20200214.140831"
+    help
+        application main firmware version
+
+endif
+
+config AOS_CREATE_PROJECT
+    bool 
+    default y
+
+config AOS_BUILD_BOARD
+    string
+    default "esp8266"
+
+config AOS_BUILD_APP
+    string
+    default "myespligt"
+
+config AOS_SDK_PATH
+    string
+    option env="AOS_SDK_PATH"
+
+config USER_APP_PATH
+    string
+    option env="APPDIR"
+endmenu
+
+menu "BSP         Configuration"
+source "$AOS_SDK_PATH/platform/arch/xtensa/lx106/Config.in"
+source "$USER_APP_PATH/board/esp8266/Config.in"
+source "$AOS_SDK_PATH/platform/mcu/esp8266/Config.in"
+endmenu
+
+menu "Kernel      Configuration"
+source "$AOS_SDK_PATH/core/init/Config.in"
+source "$AOS_SDK_PATH/core/kv/Config.in"
+source "$AOS_SDK_PATH/core/libc/Config.in"
+source "$AOS_SDK_PATH/core/osal/aos/Config.in"
+source "$AOS_SDK_PATH/core/rbtree/Config.in"
+source "$AOS_SDK_PATH/core/rhino/Config.in"
+source "$AOS_SDK_PATH/core/vfs/Config.in"
+if ((!AOS_BOARD_ESP8266))
+source "$AOS_SDK_PATH/core/cli/Config.in"
+endif
+endmenu
+
+menu "Components  Configuration"
+source "$AOS_SDK_PATH/components/utility/at/Config.in"
+source "$AOS_SDK_PATH/components/peripherals/iot_comm_module/sal/wifi/bk7231/Config.in"
+source "$AOS_SDK_PATH/components/dm/ulog/Config.in"
+source "$AOS_SDK_PATH/components/dm/und/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/dev_model/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/dev_sign/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/dynamic_register/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/infra/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/iot_coap/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/mqtt/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/wifi_provision/Config.in"
+source "$AOS_SDK_PATH/components/linkkit/wrappers/Config.in"
+source "$AOS_SDK_PATH/components/network/Config.in"
+source "$AOS_SDK_PATH/components/network/lwip/Config.in"
+source "$AOS_SDK_PATH/components/network/netmgr/Config.in"
+source "$AOS_SDK_PATH/components/network/netmgr/activation/Config.in"
+source "$AOS_SDK_PATH/components/network/netmgr/activation/chip_code/Config.in"
+source "$AOS_SDK_PATH/components/utility/cjson/Config.in"
+source "$AOS_SDK_PATH/components/utility/yloop/Config.in"
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/alicrypto/Config.in"
+endif
+if ((AWSS_SUPPORT_BLE_PROVISION))
+source "$AOS_SDK_PATH/components/wireless/bluetooth/ble/breeze/Config.in"
+endif
+if (((AWSS_SUPPORT_BLE_PROVISION) && CONFIG_COMP_BZ_BUILTIN_HAL))
+source "$AOS_SDK_PATH/components/wireless/bluetooth/ble/breeze/ref-impl/Config.in"
+endif
+if ((((AWSS_SUPPORT_BLE_PROVISION) && CONFIG_COMP_BZ_BUILTIN_HAL) && CONFIG_COMP_BZ_HAL_BLESTACK))
+source "$AOS_SDK_PATH/components/wireless/bluetooth/ble/host/bt_common/Config.in"
+endif
+if ((((AWSS_SUPPORT_BLE_PROVISION) && CONFIG_COMP_BZ_BUILTIN_HAL) && CONFIG_COMP_BZ_HAL_BLESTACK))
+source "$AOS_SDK_PATH/components/wireless/bluetooth/ble/host/Config.in"
+endif
+if ((ULOG_CONFIG_FS_FATFS_FLASH || ULOG_CONFIG_FS_FATFS_SD))
+source "$AOS_SDK_PATH/components/fs/fatfs/Config.in"
+endif
+if (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE))
+source "$AOS_SDK_PATH/components/network/http/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/id2/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/irot/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/itls/Config.in"
+endif
+if ((SUPPORT_TLS || COAP_DTLS_SUPPORT))
+source "$AOS_SDK_PATH/components/linkkit/certs/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/irot/km/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/irot/se/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/irot/tee/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/ls_hal/Config.in"
+endif
+if ((USE_ITLS) || (ENABLE_AOS_OTA) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_ITLS))
+source "$AOS_SDK_PATH/components/security/linksecurity/ls_osa/Config.in"
+endif
+if (((USE_MBEDTLS || COAP_DTLS_SUPPORT) || (KV_CONFIG_SECURE_CRYPT_IMPL) || (ENABLE_AOS_OTA) || (((AWSS_SUPPORT_BLE_PROVISION) && CONFIG_COMP_BZ_BUILTIN_HAL) && CONFIG_COMP_BZ_HAL_CRYPTO_MEBDTLS) || (((ENABLE_AOS_OTA) && !OTA_CONFIG_BLE) && CONFIG_HTTP_SECURE_TLS)) || (KV_CONFIG_SECURE_CRYPT_IMPL))
+source "$AOS_SDK_PATH/components/security/mbedtls/Config.in"
+endif
+if ((ENABLE_AOS_OTA))
+source "$AOS_SDK_PATH/components/dm/ota/Config.in"
+endif
+if ((ULOG_CONFIG_FS_SPIFFS))
+source "$AOS_SDK_PATH/components/fs/spiffs/Config.in"
+endif
+if ((UND_CONFIG_USE_UAGENT) || (ULOG_CONFIG_UPLOAD || ULOG_CONFIG_POP_CLOUD))
+source "$AOS_SDK_PATH/components/dm/uagent/Config.in"
+endif
+endmenu
+
