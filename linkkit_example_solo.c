@@ -26,10 +26,10 @@
 #include "app_entry.h"
 
 // for demo only
-#define PRODUCT_KEY      "a1qfJGFTqu3"
-#define PRODUCT_SECRET   "zQphAbavSRgTOkGG"
-#define DEVICE_NAME      "MyFirstTMLight"
-#define DEVICE_SECRET    "bee55988e471e566a0145baa3345baf2"
+#define PRODUCT_KEY      ""     //change to your PRODUCT_KEY
+#define PRODUCT_SECRET   "" // change to your PRODUCT_SECRET
+#define DEVICE_NAME      ""   // change to your DEVICE_NAME
+#define DEVICE_SECRET    ""  //change to your DEVICE_SECRET
 
 #define EXAMPLE_TRACE(...)                                          \
     do {                                                            \
